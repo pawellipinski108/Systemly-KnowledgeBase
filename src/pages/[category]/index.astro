@@ -93,11 +93,11 @@ const paginatedArticles = categoryArticles.slice(
 	.nav-banner {
 		background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
 		color: white;
-		padding: 0.75rem 1.5rem;
 	}
 	.nav-inner {
 		max-width: var(--max-width);
 		margin: 0 auto;
+		padding: 0.75rem var(--side-padding);
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
@@ -112,7 +112,7 @@ const paginatedArticles = categoryArticles.slice(
 	.main-content {
 		max-width: var(--max-width);
 		margin: 0 auto;
-		padding: 2rem 1.5rem;
+		padding: 2rem var(--side-padding);
 	}
 
 	.content-grid {

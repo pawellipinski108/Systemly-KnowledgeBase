@@ -53,12 +53,12 @@ const categoriesWithCounts = categories
 	.hero {
 		background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
 		color: white;
-		padding: 3rem 1.5rem;
 		text-align: center;
 	}
 	.hero-inner {
-		max-width: 700px;
+		max-width: var(--max-width);
 		margin: 0 auto;
+		padding: 3rem var(--side-padding);
 	}
 	.hero h1 {
 		font-size: 2rem;
@@ -69,7 +69,7 @@ const categoriesWithCounts = categories
 	.main-content {
 		max-width: var(--max-width);
 		margin: 0 auto;
-		padding: 2rem 1.5rem;
+		padding: 2rem var(--side-padding);
 	}
 
 	.content-grid {

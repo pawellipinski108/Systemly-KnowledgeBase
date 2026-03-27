@@ -86,18 +86,19 @@ const { title, description = 'Systemly Knowledge Base' } = Astro.props;
 				--color-link: #2563eb;
 				--font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 				--max-width: 1100px;
+				--side-padding: 1.5rem;
 			}
 
 			[data-theme="dark"] {
 				--color-primary: #60a5fa;
 				--color-primary-dark: #3b82f6;
 				--color-primary-light: #1e3a5f;
-				--color-bg: #000000;
-				--color-bg-alt: #111111;
-				--color-bg-sidebar: #111111;
-				--color-text: #e2e8f0;
-				--color-text-light: #94a3b8;
-				--color-border: #2a2a2a;
+				--color-bg: #1a1a1a;
+				--color-bg-alt: #222222;
+				--color-bg-sidebar: #222222;
+				--color-text: #c8c8c8;
+				--color-text-light: #888888;
+				--color-border: #333333;
 				--color-link: #60a5fa;
 			}
 
@@ -118,7 +119,7 @@ const { title, description = 'Systemly Knowledge Base' } = Astro.props;
 			.header-inner {
 				max-width: var(--max-width);
 				margin: 0 auto;
-				padding: 0.75rem 1.5rem;
+				padding: 0.75rem var(--side-padding);
 				display: flex;
 				align-items: center;
 				justify-content: space-between;
@@ -154,12 +155,11 @@ const { title, description = 'Systemly Knowledge Base' } = Astro.props;
 				margin-top: auto;
 				background: var(--color-bg-alt);
 				border-top: 1px solid var(--color-border);
-				padding: 2rem 1.5rem;
 				text-align: center;
 				color: var(--color-text-light);
 				font-size: 0.875rem;
 			}
-			.footer-inner { max-width: var(--max-width); margin: 0 auto; padding: 0 1.5rem; }
+			.footer-inner { max-width: var(--max-width); margin: 0 auto; padding: 2rem var(--side-padding); }
 		</style>
 	</body>
 </html>

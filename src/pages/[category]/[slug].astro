@@ -188,7 +188,6 @@ for (const h of headings) {
 	.nav-inner {
 		max-width: var(--max-width);
 		margin: 0 auto;
-		padding: 0 1.5rem;
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
@@ -321,8 +320,7 @@ for (const h of headings) {
 		color: var(--color-text-light);
 		display: block;
 		padding: 0.3rem 0.5rem;
-		border-left: 2px solid transparent;
-		border-radius: 0 4px 4px 0;
+		border-radius: 4px;
 		transition: all 0.2s;
 	}
 	.toc-list a:hover {
@@ -330,11 +328,16 @@ for (const h of headings) {
 		text-decoration: none;
 	}
 
-	/* Active state: highlighted with left border */
-	.toc-list a:global(.active) {
+	/* H2 active: blue background, full rounded corners */
+	.toc-h2 > a:global(.active) {
 		color: white;
 		background: var(--color-primary);
-		border-left-color: var(--color-primary-dark);
+	}
+
+	/* H3 active: just text color change, no background */
+	.toc-h3 a:global(.active) {
+		color: var(--color-primary);
+		font-weight: 600;
 	}
 
 	/* H3 children: hidden by default, shown when parent H2 is expanded */

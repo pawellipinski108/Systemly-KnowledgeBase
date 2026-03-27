@@ -12,7 +12,7 @@ export function getStaticPaths() {
 	}));
 }
 
-const ARTICLES_PER_PAGE = 10;
+const ARTICLES_PER_PAGE = 50;
 
 const { category } = Astro.props;
 const page = Math.max(1, parseInt(Astro.url.searchParams.get('page') || '1'));
@@ -53,16 +53,12 @@ const paginatedArticles = categoryArticles.slice(
 				</div>
 
 				<div class="article-list">
-					{paginatedArticles.map((article, i) => {
+					{paginatedArticles.map(article => {
 						const slug = article.id.includes('/') ? article.id.split('/').pop()?.replace('.md', '') : article.id.replace('.md', '');
-						const num = (page - 1) * ARTICLES_PER_PAGE + i + 1;
 						return (
 							<a href={`/${category.slug}/${slug}/`} class="article-item">
-								<span class="article-num">{num}.</span>
-								<div>
-									<h3>{article.data.title}</h3>
-									<p>{article.data.description}</p>
-								</div>
+								<h3>{article.data.title}</h3>
+								<p>{article.data.description}</p>
 							</a>
 						);
 					})}
@@ -102,6 +98,7 @@ const paginatedArticles = categoryArticles.slice(
 	.nav-inner {
 		max-width: var(--max-width);
 		margin: 0 auto;
+		padding: 0 1.5rem;
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
@@ -155,9 +152,7 @@ const paginatedArticles = categoryArticles.slice(
 	}
 
 	.article-item {
-		display: flex;
-		align-items: flex-start;
-		gap: 0.75rem;
+		display: block;
 		padding: 1.25rem 0.5rem;
 		border-bottom: 1px solid var(--color-border);
 		color: var(--color-text);
@@ -168,14 +163,6 @@ const paginatedArticles = categoryArticles.slice(
 	.article-item:hover {
 		background: var(--color-bg-alt);
 		text-decoration: none;
-	}
-
-	.article-num {
-		font-size: 0.85rem;
-		color: var(--color-text-light);
-		font-weight: 600;
-		min-width: 1.5rem;
-		padding-top: 0.1rem;
 	}
 
 	.article-item h3 {

@@ -1,0 +1,165 @@
+---
+interface Props {
+	title: string;
+	description?: string;
+}
+
+const { title, description = 'Systemly Knowledge Base' } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="description" content={description} />
+		<title>{title} | Systemly Knowledge Base</title>
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+	</head>
+	<body>
+		<header class="site-header">
+			<div class="header-inner">
+				<a href="/" class="logo">
+					<svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<rect width="36" height="36" rx="8" fill="white"/>
+						<path d="M10 11h16v2H10zm0 6h16v2H10zm0 6h12v2H10z" fill="#2563eb"/>
+					</svg>
+					<span>Systemly</span>
+				</a>
+				<button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
+					<svg class="icon-sun" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+						<path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"/>
+					</svg>
+					<svg class="icon-moon" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+						<path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/>
+					</svg>
+				</button>
+			</div>
+		</header>
+
+		<slot />
+
+		<footer class="site-footer">
+			<div class="footer-inner">
+				<p>&copy; {new Date().getFullYear()} Systemly. All rights reserved.</p>
+			</div>
+		</footer>
+
+		<script is:inline>
+			// Theme toggle
+			(function() {
+				const toggle = document.getElementById('theme-toggle');
+				const html = document.documentElement;
+
+				function getTheme() {
+					return localStorage.getItem('theme') ||
+						(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+				}
+
+				function setTheme(theme) {
+					html.setAttribute('data-theme', theme);
+					localStorage.setItem('theme', theme);
+				}
+
+				setTheme(getTheme());
+
+				toggle?.addEventListener('click', () => {
+					setTheme(html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+				});
+			})();
+		</script>
+
+		<style is:global>
+			/* Reset & base */
+			*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+			:root {
+				--color-primary: #2563eb;
+				--color-primary-dark: #1e40af;
+				--color-primary-light: #dbeafe;
+				--color-bg: #ffffff;
+				--color-bg-alt: #f8fafc;
+				--color-bg-sidebar: #f9fafb;
+				--color-text: #1e293b;
+				--color-text-light: #64748b;
+				--color-border: #e2e8f0;
+				--color-link: #2563eb;
+				--font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+				--max-width: 1100px;
+			}
+
+			[data-theme="dark"] {
+				--color-primary: #60a5fa;
+				--color-primary-dark: #3b82f6;
+				--color-primary-light: #1e3a5f;
+				--color-bg: #0f172a;
+				--color-bg-alt: #1e293b;
+				--color-bg-sidebar: #1e293b;
+				--color-text: #e2e8f0;
+				--color-text-light: #94a3b8;
+				--color-border: #334155;
+				--color-link: #60a5fa;
+			}
+
+			html { font-family: var(--font-sans); color: var(--color-text); background: var(--color-bg); }
+			body { min-height: 100vh; display: flex; flex-direction: column; }
+			a { color: var(--color-link); text-decoration: none; }
+			a:hover { text-decoration: underline; }
+			img { max-width: 100%; }
+
+			/* Header */
+			.site-header {
+				background: var(--color-bg);
+				border-bottom: 1px solid var(--color-border);
+				position: sticky;
+				top: 0;
+				z-index: 100;
+			}
+			.header-inner {
+				max-width: var(--max-width);
+				margin: 0 auto;
+				padding: 0.75rem 1.5rem;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+			}
+			.logo {
+				display: flex;
+				align-items: center;
+				gap: 0.5rem;
+				font-size: 1.25rem;
+				font-weight: 700;
+				color: var(--color-text);
+				text-decoration: none;
+			}
+			.logo:hover { text-decoration: none; }
+
+			/* Theme toggle */
+			.theme-toggle {
+				background: none;
+				border: 1px solid var(--color-border);
+				border-radius: 8px;
+				padding: 0.4rem;
+				cursor: pointer;
+				color: var(--color-text-light);
+				display: flex;
+				align-items: center;
+			}
+			.theme-toggle:hover { color: var(--color-text); }
+			[data-theme="light"] .icon-moon { display: none; }
+			[data-theme="dark"] .icon-sun { display: none; }
+
+			/* Footer */
+			.site-footer {
+				margin-top: auto;
+				background: var(--color-bg-alt);
+				border-top: 1px solid var(--color-border);
+				padding: 2rem 1.5rem;
+				text-align: center;
+				color: var(--color-text-light);
+				font-size: 0.875rem;
+			}
+			.footer-inner { max-width: var(--max-width); margin: 0 auto; }
+		</style>
+	</body>
+</html>

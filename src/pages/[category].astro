@@ -1,0 +1,164 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SearchBar from '../components/SearchBar.astro';
+import Sidebar from '../components/Sidebar.astro';
+import { getCollection } from 'astro:content';
+import { categories } from '../data/categories';
+
+export function getStaticPaths() {
+	return categories.map(cat => ({
+		params: { category: cat.slug },
+		props: { category: cat },
+	}));
+}
+
+const { category } = Astro.props;
+const allArticles = await getCollection('articles', ({ data }) => !data.draft);
+const categoryArticles = allArticles
+	.filter(a => a.data.category === category.slug)
+	.sort((a, b) => a.data.order - b.data.order);
+---
+
+<BaseLayout title={category.title} description={category.description}>
+	<!-- Nav Banner -->
+	<nav class="nav-banner">
+		<div class="nav-inner">
+			<div class="breadcrumbs">
+				<a href="/">Home</a>
+				<span class="sep">&rsaquo;</span>
+				<span>{category.title}</span>
+			</div>
+			<SearchBar size="small" />
+		</div>
+	</nav>
+
+	<main class="main-content">
+		<div class="content-grid">
+			<div class="content-main">
+				<div class="category-header">
+					<span class="category-icon">{category.icon}</span>
+					<div>
+						<h1>{category.title}</h1>
+						<p class="category-desc">{category.description}</p>
+					</div>
+				</div>
+
+				<div class="article-list">
+					{categoryArticles.map(article => (
+						<a href={`/${category.slug}/${article.id.split('/').pop()?.replace('.md', '') || article.id}/`} class="article-item">
+							<h3>{article.data.title}</h3>
+							<p>{article.data.description}</p>
+						</a>
+					))}
+					{categoryArticles.length === 0 && (
+						<p class="no-articles">No articles in this category yet.</p>
+					)}
+				</div>
+			</div>
+			<Sidebar />
+		</div>
+	</main>
+</BaseLayout>
+
+<style>
+	.nav-banner {
+		background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
+		color: white;
+		padding: 0.75rem 1.5rem;
+	}
+	.nav-inner {
+		max-width: var(--max-width);
+		margin: 0 auto;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+	}
+	.breadcrumbs { font-size: 0.9rem; }
+	.breadcrumbs a { color: rgba(255,255,255,0.8); }
+	.breadcrumbs a:hover { color: white; }
+	.breadcrumbs .sep { margin: 0 0.5rem; opacity: 0.6; }
+	.breadcrumbs span:last-child { color: white; }
+
+	.main-content {
+		max-width: var(--max-width);
+		margin: 0 auto;
+		padding: 2rem 1.5rem;
+	}
+
+	.content-grid {
+		display: grid;
+		grid-template-columns: 1fr 300px;
+		gap: 2rem;
+		align-items: start;
+	}
+
+	.category-header {
+		display: flex;
+		align-items: flex-start;
+		gap: 1rem;
+		margin-bottom: 2rem;
+		padding-bottom: 1.5rem;
+		border-bottom: 2px solid var(--color-border);
+	}
+
+	.category-icon {
+		font-size: 2.5rem;
+		flex-shrink: 0;
+	}
+
+	.category-header h1 {
+		font-size: 1.5rem;
+		font-weight: 700;
+		margin-bottom: 0.25rem;
+	}
+
+	.category-desc {
+		font-size: 0.9rem;
+		color: var(--color-text-light);
+		line-height: 1.5;
+	}
+
+	.article-list {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.article-item {
+		display: block;
+		padding: 1.25rem 0.5rem;
+		border-bottom: 1px solid var(--color-border);
+		color: var(--color-text);
+		text-decoration: none;
+		transition: background 0.2s;
+		border-radius: 4px;
+	}
+	.article-item:hover {
+		background: var(--color-bg-alt);
+		text-decoration: none;
+	}
+
+	.article-item h3 {
+		font-size: 1rem;
+		font-weight: 600;
+		margin-bottom: 0.25rem;
+		color: var(--color-text);
+	}
+
+	.article-item p {
+		font-size: 0.85rem;
+		color: var(--color-text-light);
+		line-height: 1.4;
+	}
+
+	.no-articles {
+		padding: 2rem;
+		text-align: center;
+		color: var(--color-text-light);
+	}
+
+	@media (max-width: 768px) {
+		.content-grid { grid-template-columns: 1fr; }
+		.nav-inner { flex-direction: column; align-items: flex-start; }
+	}
+</style>

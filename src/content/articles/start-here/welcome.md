@@ -1,8 +1,8 @@
 ---
 title: Welcome to Systemly
 description: Learn what Systemly is and how it can help you grow your Arbonne business.
-sidebar:
-  order: 1
+category: start-here
+order: 1
 ---
 
 Welcome to Systemly — your all-in-one platform for managing and growing your Arbonne business.

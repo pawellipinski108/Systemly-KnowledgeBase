@@ -1,8 +1,8 @@
 ---
 title: Creating Your First Funnel
 description: Learn how to build your first landing page funnel in Systemly.
-sidebar:
-  order: 1
+category: tutorials
+order: 1
 ---
 
 Funnels in Systemly let you create landing pages and multi-step flows to capture leads and grow your Arbonne business.

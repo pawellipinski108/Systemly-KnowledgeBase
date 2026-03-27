@@ -1,8 +1,8 @@
 ---
 title: Setting Up Your Account
 description: Complete your Systemly account setup with this step-by-step guide.
-sidebar:
-  order: 2
+category: start-here
+order: 2
 ---
 
 This guide walks you through the essential first steps after logging into Systemly for the first time.

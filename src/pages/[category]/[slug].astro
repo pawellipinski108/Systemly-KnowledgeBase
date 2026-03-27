@@ -44,7 +44,7 @@ for (const h of headings) {
 
 <BaseLayout title={article.data.title} description={article.data.description}>
 	<nav class="nav-banner">
-		<div class="nav-inner">
+		<div class="container nav-inner">
 			<div class="breadcrumbs">
 				<a href="/">Home</a>
 				<span class="sep">&rsaquo;</span>
@@ -56,7 +56,7 @@ for (const h of headings) {
 		</div>
 	</nav>
 
-	<main class="main-content">
+	<main class="container main-content">
 		<div class="content-grid">
 			<article class="article-body" data-pagefind-body>
 				<h1>{article.data.title}</h1>
@@ -185,9 +185,8 @@ for (const h of headings) {
 		color: white;
 	}
 	.nav-inner {
-		max-width: var(--max-width);
-		margin: 0 auto;
-		padding: 0.75rem var(--side-padding);
+		padding-top: 0.75rem;
+		padding-bottom: 0.75rem;
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
@@ -200,9 +199,8 @@ for (const h of headings) {
 	.breadcrumbs span:last-child { color: white; font-size: 0.85rem; }
 
 	.main-content {
-		max-width: var(--max-width);
-		margin: 0 auto;
-		padding: 2rem var(--side-padding);
+		padding-top: 2rem;
+		padding-bottom: 2rem;
 	}
 
 	.content-grid {

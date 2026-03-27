@@ -31,7 +31,7 @@ const paginatedArticles = categoryArticles.slice(
 
 <BaseLayout title={category.title} description={category.description}>
 	<nav class="nav-banner">
-		<div class="nav-inner">
+		<div class="container nav-inner">
 			<div class="breadcrumbs">
 				<a href="/">Home</a>
 				<span class="sep">&rsaquo;</span>
@@ -41,7 +41,7 @@ const paginatedArticles = categoryArticles.slice(
 		</div>
 	</nav>
 
-	<main class="main-content">
+	<main class="container main-content">
 		<div class="content-grid">
 			<div class="content-main">
 				<div class="category-header">
@@ -95,9 +95,8 @@ const paginatedArticles = categoryArticles.slice(
 		color: white;
 	}
 	.nav-inner {
-		max-width: var(--max-width);
-		margin: 0 auto;
-		padding: 0.75rem var(--side-padding);
+		padding-top: 0.75rem;
+		padding-bottom: 0.75rem;
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
@@ -110,9 +109,8 @@ const paginatedArticles = categoryArticles.slice(
 	.breadcrumbs span:last-child { color: white; }
 
 	.main-content {
-		max-width: var(--max-width);
-		margin: 0 auto;
-		padding: 2rem var(--side-padding);
+		padding-top: 2rem;
+		padding-bottom: 2rem;
 	}
 
 	.content-grid {
@@ -183,7 +181,6 @@ const paginatedArticles = categoryArticles.slice(
 		color: var(--color-text-light);
 	}
 
-	/* Pagination */
 	.pagination {
 		display: flex;
 		align-items: center;

@@ -16,16 +16,14 @@ const categoriesWithCounts = categories
 ---
 
 <BaseLayout title="Home" description="Systemly Knowledge Base — find guides, tutorials, and answers.">
-	<!-- Hero Banner -->
 	<section class="hero">
-		<div class="hero-inner">
+		<div class="container hero-inner">
 			<h1>How can we help?</h1>
 			<SearchBar size="large" />
 		</div>
 	</section>
 
-	<!-- Main Content -->
-	<main class="main-content">
+	<main class="container main-content">
 		<div class="content-grid">
 			<div class="content-main">
 				<h2 class="section-title">Help Topics</h2>
@@ -56,9 +54,8 @@ const categoriesWithCounts = categories
 		text-align: center;
 	}
 	.hero-inner {
-		max-width: var(--max-width);
-		margin: 0 auto;
-		padding: 3rem var(--side-padding);
+		padding-top: 3rem;
+		padding-bottom: 3rem;
 	}
 	.hero h1 {
 		font-size: 2rem;
@@ -67,9 +64,8 @@ const categoriesWithCounts = categories
 	}
 
 	.main-content {
-		max-width: var(--max-width);
-		margin: 0 auto;
-		padding: 2rem var(--side-padding);
+		padding-top: 2rem;
+		padding-bottom: 2rem;
 	}
 
 	.content-grid {

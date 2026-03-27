@@ -1,9 +1,9 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import SearchBar from '../components/SearchBar.astro';
-import Sidebar from '../components/Sidebar.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SearchBar from '../../components/SearchBar.astro';
+import Sidebar from '../../components/Sidebar.astro';
 import { getCollection } from 'astro:content';
-import { categories } from '../data/categories';
+import { categories } from '../../data/categories';
 
 export function getStaticPaths() {
 	return categories.map(cat => ({
@@ -12,15 +12,24 @@ export function getStaticPaths() {
 	}));
 }
 
+const ARTICLES_PER_PAGE = 10;
+
 const { category } = Astro.props;
+const page = Math.max(1, parseInt(Astro.url.searchParams.get('page') || '1'));
+
 const allArticles = await getCollection('articles', ({ data }) => !data.draft);
 const categoryArticles = allArticles
 	.filter(a => a.data.category === category.slug)
 	.sort((a, b) => a.data.order - b.data.order);
+
+const totalPages = Math.ceil(categoryArticles.length / ARTICLES_PER_PAGE);
+const paginatedArticles = categoryArticles.slice(
+	(page - 1) * ARTICLES_PER_PAGE,
+	page * ARTICLES_PER_PAGE
+);
 ---
 
 <BaseLayout title={category.title} description={category.description}>
-	<!-- Nav Banner -->
 	<nav class="nav-banner">
 		<div class="nav-inner">
 			<div class="breadcrumbs">
@@ -44,16 +53,40 @@ const categoryArticles = allArticles
 				</div>
 
 				<div class="article-list">
-					{categoryArticles.map(article => (
-						<a href={`/${category.slug}/${article.id.split('/').pop()?.replace('.md', '') || article.id}/`} class="article-item">
-							<h3>{article.data.title}</h3>
-							<p>{article.data.description}</p>
-						</a>
-					))}
+					{paginatedArticles.map((article, i) => {
+						const slug = article.id.includes('/') ? article.id.split('/').pop()?.replace('.md', '') : article.id.replace('.md', '');
+						const num = (page - 1) * ARTICLES_PER_PAGE + i + 1;
+						return (
+							<a href={`/${category.slug}/${slug}/`} class="article-item">
+								<span class="article-num">{num}.</span>
+								<div>
+									<h3>{article.data.title}</h3>
+									<p>{article.data.description}</p>
+								</div>
+							</a>
+						);
+					})}
 					{categoryArticles.length === 0 && (
 						<p class="no-articles">No articles in this category yet.</p>
 					)}
 				</div>
+
+				{totalPages > 1 && (
+					<nav class="pagination">
+						{page > 1 && (
+							<a href={`/${category.slug}/?page=${page - 1}`} class="page-btn">&laquo; Previous</a>
+						)}
+						{Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+							<a
+								href={`/${category.slug}/?page=${p}`}
+								class:list={['page-num', { active: p === page }]}
+							>{p}</a>
+						))}
+						{page < totalPages && (
+							<a href={`/${category.slug}/?page=${page + 1}`} class="page-btn">Next &raquo;</a>
+						)}
+					</nav>
+				)}
 			</div>
 			<Sidebar />
 		</div>
@@ -102,10 +135,7 @@ const categoryArticles = allArticles
 		border-bottom: 2px solid var(--color-border);
 	}
 
-	.category-icon {
-		font-size: 2.5rem;
-		flex-shrink: 0;
-	}
+	.category-icon { font-size: 2.5rem; flex-shrink: 0; }
 
 	.category-header h1 {
 		font-size: 1.5rem;
@@ -125,7 +155,9 @@ const categoryArticles = allArticles
 	}
 
 	.article-item {
-		display: block;
+		display: flex;
+		align-items: flex-start;
+		gap: 0.75rem;
 		padding: 1.25rem 0.5rem;
 		border-bottom: 1px solid var(--color-border);
 		color: var(--color-text);
@@ -136,6 +168,14 @@ const categoryArticles = allArticles
 	.article-item:hover {
 		background: var(--color-bg-alt);
 		text-decoration: none;
+	}
+
+	.article-num {
+		font-size: 0.85rem;
+		color: var(--color-text-light);
+		font-weight: 600;
+		min-width: 1.5rem;
+		padding-top: 0.1rem;
 	}
 
 	.article-item h3 {
@@ -155,6 +195,34 @@ const categoryArticles = allArticles
 		padding: 2rem;
 		text-align: center;
 		color: var(--color-text-light);
+	}
+
+	/* Pagination */
+	.pagination {
+		display: flex;
+		align-items: center;
+		gap: 0.375rem;
+		margin-top: 2rem;
+		padding-top: 1.5rem;
+	}
+
+	.page-btn, .page-num {
+		padding: 0.5rem 0.75rem;
+		border: 1px solid var(--color-border);
+		border-radius: 6px;
+		font-size: 0.875rem;
+		color: var(--color-text);
+		text-decoration: none;
+		transition: all 0.2s;
+	}
+	.page-btn:hover, .page-num:hover {
+		background: var(--color-bg-alt);
+		text-decoration: none;
+	}
+	.page-num.active {
+		background: var(--color-primary);
+		color: white;
+		border-color: var(--color-primary);
 	}
 
 	@media (max-width: 768px) {

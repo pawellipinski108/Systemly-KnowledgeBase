@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SearchBar from '../components/SearchBar.astro';
-import Sidebar from '../components/Sidebar.astro';
+import HomeSidebar from '../components/HomeSidebar.astro';
 import { getCollection } from 'astro:content';
 import { categories } from '../data/categories';
 
@@ -44,7 +44,7 @@ const categoriesWithCounts = categories
 					))}
 				</div>
 			</div>
-			<Sidebar />
+			<HomeSidebar />
 		</div>
 	</main>
 </BaseLayout>

@@ -1,0 +1,101 @@
+---
+import { getCollection } from 'astro:content';
+
+const allArticles = await getCollection('articles', ({ data }) => !data.draft);
+
+// Show first 5 articles sorted by order as "popular" — no database needed
+const popularArticles = allArticles
+	.sort((a, b) => a.data.order - b.data.order)
+	.slice(0, 5);
+---
+
+<aside class="sidebar">
+	<div class="sidebar-box">
+		<h3>Popular Articles</h3>
+		<ul class="popular-list">
+			{popularArticles.map(article => {
+				const slug = article.id.includes('/') ? article.id.split('/').pop()!.replace('.md', '') : article.id.replace('.md', '');
+				return (
+					<li>
+						<a href={`/${article.data.category}/${slug}/`}>
+							<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" class="doc-icon">
+								<path d="M4 1h5.586L13 4.414V14a1 1 0 01-1 1H4a1 1 0 01-1-1V2a1 1 0 011-1zm5 1H4v12h8V5H9V2z"/>
+							</svg>
+							{article.data.title}
+						</a>
+					</li>
+				);
+			})}
+		</ul>
+	</div>
+
+	<div class="sidebar-box support-box">
+		<h3>Need Support?</h3>
+		<p>Can't find the answer you're looking for? Don't worry we're here to help!</p>
+		<a href="mailto:support@systemly.io" class="btn-support">Contact Support</a>
+	</div>
+</aside>
+
+<style>
+	.sidebar {
+		display: flex;
+		flex-direction: column;
+		gap: 1.5rem;
+	}
+
+	.sidebar-box {
+		background: var(--color-bg-sidebar);
+		border: 1px solid var(--color-border);
+		border-radius: 8px;
+		padding: 1.25rem;
+	}
+
+	.sidebar-box h3 {
+		font-size: 1rem;
+		font-weight: 700;
+		margin-bottom: 0.75rem;
+		color: var(--color-text);
+	}
+
+	.popular-list {
+		list-style: none;
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.popular-list a {
+		display: flex;
+		align-items: flex-start;
+		gap: 0.5rem;
+		font-size: 0.9rem;
+		color: var(--color-link);
+		line-height: 1.4;
+	}
+
+	.doc-icon {
+		flex-shrink: 0;
+		margin-top: 0.15rem;
+		opacity: 0.6;
+	}
+
+	.support-box p {
+		font-size: 0.875rem;
+		color: var(--color-text-light);
+		margin-bottom: 1rem;
+		line-height: 1.5;
+	}
+
+	.btn-support {
+		display: inline-block;
+		background: var(--color-primary);
+		color: white !important;
+		padding: 0.5rem 1rem;
+		border-radius: 6px;
+		font-size: 0.875rem;
+		font-weight: 600;
+		text-decoration: none !important;
+		transition: background 0.2s;
+	}
+	.btn-support:hover { background: var(--color-primary-dark); }
+</style>

@@ -9,7 +9,6 @@ export async function getStaticPaths() {
 	const allArticles = await getCollection('articles', ({ data }) => !data.draft);
 	return allArticles.map(article => {
 		const category = categories.find(c => c.slug === article.data.category);
-		// Extract just the filename without the category folder prefix
 		const slug = article.id.includes('/') ? article.id.split('/').pop()! : article.id;
 		return {
 			params: {
@@ -24,16 +23,26 @@ export async function getStaticPaths() {
 const { article, category } = Astro.props;
 const { Content, headings } = await render(article);
 
-// Get related articles from same category
 const allArticles = await getCollection('articles', ({ data }) => !data.draft);
 const relatedArticles = allArticles
 	.filter(a => a.data.category === article.data.category && a.id !== article.id)
 	.sort((a, b) => a.data.order - b.data.order)
 	.slice(0, 5);
+
+// Build TOC structure: group H3s under their parent H2
+interface TocH3 { slug: string; text: string; }
+interface TocH2 { slug: string; text: string; children: TocH3[]; }
+const tocItems: TocH2[] = [];
+for (const h of headings) {
+	if (h.depth === 2) {
+		tocItems.push({ slug: h.slug, text: h.text, children: [] });
+	} else if (h.depth === 3 && tocItems.length > 0) {
+		tocItems[tocItems.length - 1].children.push({ slug: h.slug, text: h.text });
+	}
+}
 ---
 
 <BaseLayout title={article.data.title} description={article.data.description}>
-	<!-- Nav Banner -->
 	<nav class="nav-banner">
 		<div class="nav-inner">
 			<div class="breadcrumbs">
@@ -71,13 +80,22 @@ const relatedArticles = allArticles
 			</article>
 
 			<div class="sidebar-wrapper">
-				{headings.length > 0 && (
-					<div class="toc-box">
+				{tocItems.length > 0 && (
+					<div class="toc-box" id="toc-box">
 						<h3>Contents</h3>
 						<ul class="toc-list">
-							{headings.filter(h => h.depth <= 3).map(h => (
-								<li class={`toc-${h.depth}`}>
-									<a href={`#${h.slug}`}>{h.text}</a>
+							{tocItems.map(h2 => (
+								<li class="toc-h2" data-toc-h2={h2.slug}>
+									<a href={`#${h2.slug}`} data-toc-link={h2.slug}>{h2.text}</a>
+									{h2.children.length > 0 && (
+										<ul class="toc-children">
+											{h2.children.map(h3 => (
+												<li class="toc-h3">
+													<a href={`#${h3.slug}`} data-toc-link={h3.slug}>{h3.text}</a>
+												</li>
+											))}
+										</ul>
+									)}
 								</li>
 							))}
 						</ul>
@@ -88,6 +106,78 @@ const relatedArticles = allArticles
 		</div>
 	</main>
 </BaseLayout>
+
+<script is:inline>
+(function() {
+	const tocBox = document.getElementById('toc-box');
+	if (!tocBox) return;
+
+	const headings = document.querySelectorAll('.article-body h2, .article-body h3');
+	if (headings.length === 0) return;
+
+	const tocLinks = tocBox.querySelectorAll('[data-toc-link]');
+	const tocH2Items = tocBox.querySelectorAll('[data-toc-h2]');
+
+	let activeH2 = null;
+	let activeH3 = null;
+
+	function updateToc() {
+		const scrollY = window.scrollY + 100;
+		let currentH2 = null;
+		let currentH3 = null;
+
+		for (const heading of headings) {
+			if (heading.offsetTop <= scrollY) {
+				if (heading.tagName === 'H2') {
+					currentH2 = heading.id;
+					currentH3 = null;
+				} else if (heading.tagName === 'H3') {
+					currentH3 = heading.id;
+				}
+			}
+		}
+
+		if (currentH2 === activeH2 && currentH3 === activeH3) return;
+		activeH2 = currentH2;
+		activeH3 = currentH3;
+
+		// Reset all links
+		tocLinks.forEach(link => link.classList.remove('active'));
+
+		// Collapse all H3 groups
+		tocH2Items.forEach(item => item.classList.remove('expanded'));
+
+		if (currentH2) {
+			// Highlight active H2
+			const h2Link = tocBox.querySelector(`[data-toc-link="${currentH2}"]`);
+			if (h2Link) h2Link.classList.add('active');
+
+			// Expand H3s under active H2
+			const h2Item = tocBox.querySelector(`[data-toc-h2="${currentH2}"]`);
+			if (h2Item) h2Item.classList.add('expanded');
+
+			// Highlight active H3
+			if (currentH3) {
+				const h3Link = tocBox.querySelector(`[data-toc-link="${currentH3}"]`);
+				if (h3Link) h3Link.classList.add('active');
+			}
+		}
+	}
+
+	let ticking = false;
+	window.addEventListener('scroll', () => {
+		if (!ticking) {
+			requestAnimationFrame(() => {
+				updateToc();
+				ticking = false;
+			});
+			ticking = true;
+		}
+	});
+
+	updateToc();
+})();
+</script>
 
 <style>
 	.nav-banner {
@@ -123,9 +213,7 @@ const relatedArticles = allArticles
 	}
 
 	/* Article styles */
-	.article-body {
-		line-height: 1.7;
-	}
+	.article-body { line-height: 1.7; }
 
 	.article-body h1 {
 		font-size: 1.75rem;
@@ -148,23 +236,15 @@ const relatedArticles = allArticles
 		margin-bottom: 0.5rem;
 	}
 
-	.article-body :global(p) {
-		margin-bottom: 1rem;
-		color: var(--color-text);
-	}
+	.article-body :global(p) { margin-bottom: 1rem; color: var(--color-text); }
 
 	.article-body :global(ul), .article-body :global(ol) {
 		margin-bottom: 1rem;
 		padding-left: 1.5rem;
 	}
 
-	.article-body :global(li) {
-		margin-bottom: 0.375rem;
-	}
-
-	.article-body :global(strong) {
-		font-weight: 600;
-	}
+	.article-body :global(li) { margin-bottom: 0.375rem; }
+	.article-body :global(strong) { font-weight: 600; }
 
 	.article-body :global(code) {
 		background: var(--color-bg-alt);
@@ -201,20 +281,11 @@ const relatedArticles = allArticles
 		margin-bottom: 0.75rem;
 	}
 
-	.related-articles ul {
-		list-style: none;
-		padding: 0;
-	}
+	.related-articles ul { list-style: none; padding: 0; }
+	.related-articles li { padding: 0.375rem 0; }
+	.related-articles a { font-size: 0.9rem; }
 
-	.related-articles li {
-		padding: 0.375rem 0;
-	}
-
-	.related-articles a {
-		font-size: 0.9rem;
-	}
-
-	/* Sidebar TOC */
+	/* Sidebar */
 	.sidebar-wrapper {
 		display: flex;
 		flex-direction: column;
@@ -223,6 +294,7 @@ const relatedArticles = allArticles
 		top: 5rem;
 	}
 
+	/* TOC box */
 	.toc-box {
 		background: var(--color-bg-sidebar);
 		border: 1px solid var(--color-border);
@@ -240,24 +312,47 @@ const relatedArticles = allArticles
 		list-style: none;
 		display: flex;
 		flex-direction: column;
-		gap: 0.375rem;
+		gap: 0.125rem;
 	}
 
 	.toc-list a {
 		font-size: 0.85rem;
 		color: var(--color-text-light);
 		display: block;
-		padding: 0.25rem 0.5rem;
-		border-radius: 4px;
+		padding: 0.3rem 0.5rem;
+		border-left: 2px solid transparent;
+		border-radius: 0 4px 4px 0;
 		transition: all 0.2s;
 	}
 	.toc-list a:hover {
 		color: var(--color-primary);
-		background: var(--color-primary-light);
 		text-decoration: none;
 	}
 
-	.toc-3 { padding-left: 0.75rem; }
+	/* Active state: highlighted with left border */
+	.toc-list a:global(.active) {
+		color: white;
+		background: var(--color-primary);
+		border-left-color: var(--color-primary-dark);
+	}
+
+	/* H3 children: hidden by default, shown when parent H2 is expanded */
+	.toc-children {
+		list-style: none;
+		max-height: 0;
+		overflow: hidden;
+		transition: max-height 0.3s ease;
+		padding-left: 0.75rem;
+	}
+
+	.toc-h2:global(.expanded) .toc-children {
+		max-height: 500px;
+	}
+
+	.toc-h3 a {
+		font-size: 0.8rem;
+		padding: 0.2rem 0.5rem;
+	}
 
 	@media (max-width: 768px) {
 		.content-grid { grid-template-columns: 1fr; }

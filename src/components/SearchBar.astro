@@ -85,11 +85,12 @@ const { size = 'large' } = Astro.props;
 	}
 	.search-results :global(.search-result-item:last-child) { border-bottom: none; }
 	.search-results :global(.search-result-item:hover) { background: var(--color-bg-alt); }
-	.search-results :global(.search-result-title) { font-weight: 600; font-size: 0.9rem; }
+	.search-results :global(.search-result-title) { font-weight: 600; font-size: 0.9rem; text-align: left; }
 	.search-results :global(.search-result-excerpt) {
 		font-size: 0.8rem;
 		color: var(--color-text-light);
 		margin-top: 0.25rem;
+		text-align: left;
 	}
 	.search-results :global(.search-result-excerpt mark) {
 		background: var(--color-primary-light);

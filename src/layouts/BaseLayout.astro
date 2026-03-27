@@ -92,12 +92,12 @@ const { title, description = 'Systemly Knowledge Base' } = Astro.props;
 				--color-primary: #60a5fa;
 				--color-primary-dark: #3b82f6;
 				--color-primary-light: #1e3a5f;
-				--color-bg: #0f172a;
-				--color-bg-alt: #1e293b;
-				--color-bg-sidebar: #1e293b;
+				--color-bg: #000000;
+				--color-bg-alt: #111111;
+				--color-bg-sidebar: #111111;
 				--color-text: #e2e8f0;
 				--color-text-light: #94a3b8;
-				--color-border: #334155;
+				--color-border: #2a2a2a;
 				--color-link: #60a5fa;
 			}
 
@@ -116,7 +116,7 @@ const { title, description = 'Systemly Knowledge Base' } = Astro.props;
 				z-index: 100;
 			}
 			.header-inner {
-				max-width: var(--max-width);
+				max-width: calc(var(--max-width) + 3rem);
 				margin: 0 auto;
 				padding: 0.75rem 1.5rem;
 				display: flex;
